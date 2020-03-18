@@ -1,20 +1,21 @@
 <?php
-session_start();
 ini_set('display_errors', 0);
-
-include_once("helpers/db.php");
-include_once("helpers/functions.php");
 
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
 ini_set('session.cookie_secure', 1);
 ini_set('session.use_strict_mode', 1);
 ini_set('session.use_trans_sid', 0);
+session_start();
+
+include_once("helpers/db.php");
+include_once("helpers/functions.php");
+
 
 $page = $_SERVER['REQUEST_URI'];
 
-$page = str_replace('/school-php', '', $page);
-$page = strtok($page, '?');
+$pagePath = str_replace('/school-php', '', $page);
+$page = strtok($pagePath, '?');
 
 $logged = $_SESSION['user'];
 
@@ -26,6 +27,10 @@ $template = true;
 if($logged) {
   if($page=="/"){
     $file = 'dashboard.php';
+  } else if($page=="/logout") {
+    session_destroy();
+    header("Location: ./");
+    die();
   }
 } else {
   if($page=="/register") {
