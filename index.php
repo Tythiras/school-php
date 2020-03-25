@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', 0);
+ini_set('display_errors', 1);
 
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
@@ -27,6 +27,12 @@ $template = true;
 if($logged) {
   if($page=="/"){
     $file = 'dashboard.php';
+  } else if($page=="/action.getFiles") {
+    $template = false;
+    $file = 'actions/getFiles.php';
+  } else if($page=="/action.upload") {
+    $template = false;
+    $file = 'actions/upload.php';
   } else if($page=="/logout") {
     session_destroy();
     header("Location: ./");
