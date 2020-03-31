@@ -23,10 +23,13 @@ if($logged) { ?>
 let dropArea = document.querySelector("#files");
 
 let files = [];
-axios.get('action.getFiles')
-    .then(function(res) {
-        dropArea.innerHTML = res.data;
-    })
+loadFiles();
+function loadFiles() {
+    axios.get('action.getFiles')
+        .then(function(res) {
+            dropArea.innerHTML = res.data;
+        })  
+}
 
 
 
@@ -43,19 +46,26 @@ function upload(files) {
         ...files
     ];
     let formData = new FormData();
-    formData.folder = null;
+    formData.append("folder", null);
     list.forEach(file => {
-        formData.append('file', file)
+        formData.append('file[]', file)
     });
-    axios.post('actions/upload', formData, {
+    axios.post('action.upload', formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
-    }).then(function(){
-        console.log('SUCCESS!!');
+    }).then(function({data}){
+        const res = data;
+        if(res.success) {
+            loadFiles();
+        } else {
+            console.error(data);
+            alert('Error: '+res.message);
+        }
     })
-    .catch(function(){
-        console.log('FAILURE!!');
+    .catch(function(err){
+        console.log(err);
+        alert('Request Error');
     });
 }
 

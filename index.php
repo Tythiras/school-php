@@ -7,6 +7,7 @@ ini_set('session.cookie_secure', 1);
 ini_set('session.use_strict_mode', 1);
 ini_set('session.use_trans_sid', 0);
 session_start();
+$config = include('config.php');
 
 include_once("helpers/db.php");
 include_once("helpers/functions.php");

@@ -6,6 +6,19 @@ function safe($message, $multiline = false) {
         echo htmlspecialchars($message);
     }
 }
+function getToken($length = 16){
+    $token = "";
+    $codeAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    $codeAlphabet.= "abcdefghijklmnopqrstuvwxyz";
+    $codeAlphabet.= "0123456789";
+    $max = strlen($codeAlphabet);
+
+    for ($i=0; $i < $length; $i++) {
+        $token .= $codeAlphabet[random_int(0, $max-1)];
+    }
+
+    return $token;
+}
 
 function valid($input) {
     return !empty($input)&&ltrim($input)!='' ? ltrim($input) : false;
@@ -22,4 +35,5 @@ function infoBox($info) { ?>
     </div>
 <?php
 }
+
 ?>
