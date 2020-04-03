@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 31, 2020 at 12:53 PM
+-- Generation Time: Apr 03, 2020 at 11:59 AM
 -- Server version: 10.4.12-MariaDB
 -- PHP Version: 7.4.3
 
@@ -28,21 +28,94 @@ DELIMITER $$
 --
 CREATE DEFINER=`rasmus`@`localhost` PROCEDURE `checkFolder` (IN `_folderUID` VARCHAR(255), IN `_userID` INT)  NO SQL
 SELECT
-        fo.id
-        FROM folders fo
-        WHERE fo.uid = _folderUID AND (
-        fo.ownerID = _userID OR fo.id IN (
-            SELECT itemID from permissions WHERE receiverID = _userID AND type = "folder"
-            )
-        )$$
-
-CREATE DEFINER=`rasmus`@`localhost` PROCEDURE `folderFiles` (IN `_folderID` INT)  NO SQL
-SELECT name, uid, creation, ownerID FROM files WHERE folderID = _folderID OR id IN (
-        SELECT itemID from shortcuts WHERE targetFolder = _folderID
+    fo.id,
+    pa.uid AS parentUID
+FROM
+    folders fo
+LEFT JOIN folders pa ON pa.id = fo.folderID
+WHERE
+    fo.uid = _folderUID AND(
+        fo.ownerID = _userID OR fo.id IN(
+        SELECT
+            itemID
+        FROM
+            permissions
+        WHERE
+            receiverID = _userID AND TYPE = "folder"
+    )
     )$$
 
+CREATE DEFINER=`rasmus`@`localhost` PROCEDURE `folderFiles` (IN `_folderID` INT)  NO SQL
+SELECT name,
+    uid,
+    creation,
+    ownerID,
+    'file' AS type
+FROM
+    files
+WHERE
+    folderID = _folderID OR id IN(
+    SELECT
+        itemID
+    FROM
+        shortcuts
+    WHERE
+        targetFolder = _folderID AND type = 'file'
+)
+UNION ALL
+SELECT name,
+    uid,
+    creation,
+    ownerID,
+    'folder' AS type
+FROM
+    folders
+WHERE
+    folderID = _folderID OR id IN(
+    SELECT
+        itemID
+    FROM
+        shortcuts
+    WHERE
+        targetFolder = _folderID AND type = 'folder'
+)
+ORDER BY creation DESC$$
+
 CREATE DEFINER=`rasmus`@`localhost` PROCEDURE `rootFiles` (IN `_id` INT)  NO SQL
-SELECT name, uid, creation, ownerID FROM files WHERE ownerID = _id OR id IN ( SELECT itemID from shortcuts WHERE targetFolder = NULL AND ownerID = _id )$$
+SELECT name,
+    uid,
+    creation,
+    ownerID,
+    'file' AS type
+FROM
+    files
+WHERE
+    (ownerID = _id AND folderID IS NULL) OR id IN(
+    SELECT
+        itemID
+    FROM
+        shortcuts
+    WHERE
+        targetFolder = NULL AND ownerID = _id AND type = 'file'
+)
+UNION ALL
+SELECT name,
+    uid,
+    creation,
+    ownerID,
+    'folder' AS type
+FROM
+    folders
+WHERE
+    (ownerID = _id AND folderID IS NULL) OR id IN(
+    SELECT
+        itemID
+    FROM
+        shortcuts
+    WHERE
+        targetFolder = NULL AND ownerID = _id AND type = 'folders'
+)
+ORDER BY creation DESC$$
 
 DELIMITER ;
 

@@ -4,93 +4,34 @@ if($logged) { ?>
 <div class="container">
     <a href="logout" style="position: absolute; right: 10px; top: 10px;">Log ud</a>
 
-    <h1>Members only</h1>
+    <h1 class="title is-1">Members only</h1>
     <br>
     <form>
     <input type="file" id="fileInput" class="inputfile" multiple accept="image/*" onchange="upload(this.files)">
+    <button class="button is-dark modal-btn" style="float: right;" data-modal="newFolder" type="button">Opret mappe</button>
     <div id="files">
     Loading..
     </div>
     </form>
 </div>
 
+<div class="modal" data-modal="newFolder">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <h2 class="title is-3">Opret mappe</h2>
+        <input type="text" name="" id="folderName" class="input" placeholder="Ex. Dansk, Noter">
+        <button class="button is-info space" onclick="createFolder()" type="button">Opret</button>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+</div>
 
 
 
+<iframe id="iframe" style="display:none;"></iframe>
+
+<script src="assets/js/modal.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script>
-//https://www.smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
-let dropArea = document.querySelector("#files");
-
-let files = [];
-loadFiles();
-function loadFiles() {
-    axios.get('action.getFiles')
-        .then(function(res) {
-            dropArea.innerHTML = res.data;
-        })  
-}
-
-
-
-dropArea.addEventListener('drop', function(e) {
-  let dt = e.dataTransfer
-  let files = dt.files
-
-  upload(files)
-}, false)
-
-function upload(files) {
-    //konverter til array liste ved at destructure filelisten ind i en ny array
-    let list = [
-        ...files
-    ];
-    let formData = new FormData();
-    formData.append("folder", null);
-    list.forEach(file => {
-        formData.append('file[]', file)
-    });
-    axios.post('action.upload', formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    }).then(function({data}){
-        const res = data;
-        if(res.success) {
-            loadFiles();
-        } else {
-            console.error(data);
-            alert('Error: '+res.message);
-        }
-    })
-    .catch(function(err){
-        console.log(err);
-        alert('Request Error');
-    });
-}
-
-
-let events = ['dragenter', 'dragover', 'dragleave', 'drop'];
-events.forEach(eventName => {
-  dropArea.addEventListener(eventName, preventDefaults, false)
-})
-function preventDefaults (e) {
-  e.preventDefault()
-  e.stopPropagation()
-}
-
-dropArea.addEventListener('dragenter', ready, false)
-dropArea.addEventListener('dragover', ready, false)
-
-dropArea.addEventListener('dragleave', unready, false)
-dropArea.addEventListener('drop', unready, false)
-function ready() {
-    dropArea.classList.add('ready');
-}
-function unready() {
-    dropArea.classList.remove('ready');
-}
-</script>
+<script src="assets/js/main.js"></script>
 
 <?php
 }

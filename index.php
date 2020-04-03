@@ -28,16 +28,28 @@ $template = true;
 if($logged) {
   if($page=="/"){
     $file = 'dashboard.php';
+
   } else if($page=="/action.getFiles") {
     $template = false;
     $file = 'actions/getFiles.php';
+
+  } else if($page=="/action.download") {
+    $template = false;
+    $file = 'actions/download.php';
+
+  } else if($page=="/action.newFolder") {
+    $template = false;
+    $file = 'actions/newFolder.php';
+    
   } else if($page=="/action.upload") {
     $template = false;
     $file = 'actions/upload.php';
+
   } else if($page=="/logout") {
     session_destroy();
     header("Location: ./");
     die();
+
   }
 } else {
   if($page=="/register") {

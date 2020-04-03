@@ -3,35 +3,70 @@ if($logged) {
 $sql = false;
 $values = [];
 $error = false;
+$parent = false;
 if(isset($_GET['id'])) {
     $folderData = $db->prepare('CALL checkFolder(?, ?)');
     $folderData->execute([$_GET['id'], $logged['id']]);
-    $folder = $folderData->fetch();
-    $sql = 'CALL folderFiles(?)';
-    $values = [$folder['id']];
+    if($folderData->rowCount() > 0) {
+        $folder = $folderData->fetch();
+        $parent = true;
+        $folderData->closeCursor();
+        $sql = 'CALL folderFiles(?)';
+        $values = [$folder['id']];
+    } else {
+        echo 'No access to folder';
+        die();
+    }
 } else {
     $sql = 'CALL rootFiles(?)';
     $values = [$logged['id']];
 }
 if($sql) {
-    $filesData = $db->prepare($sql);
-    $filesData->execute($values);
-    $files = $filesData->fetchAll();
+    $itemsData = $db->prepare($sql);
+    $itemsData->execute($values);
+    $items = $itemsData->fetchAll();
+    $itemsData->closeCursor();
 } else {
     $error = 'Du har ikke adgang hertil.';
 }
 
 
 if($error) errorBox($error);
-if(count($files) == 0) {
+if($parent) {
+    ?>
+    <span class="customLink" onclick="goToFolder('<?php safe($folder['parentUID']); ?>', event)">Tilbage</span>
+    <br>
+    <?php
+}
+if(count($items) == 0) {
     echo 'Der blev ikke fundet nogen filer';
 }
-foreach($files as $file) { ?>
-    <div class="file">
-        <span class="name"><?php safe($file['name']); ?></span>
-        <span class="date"><?php safe($file['creation']); ?></span>
-    </div>
+?>
+<div class="columns is-multiline is-mobile is-3">
 <?php
+foreach($items as $item) {
+    if($item['type'] == 'file') { ?>
+        <div class="column is-one-third">
+            <div class="el file" onclick="downloadFile('<?php safe($item['uid']); ?>')">
+                <span class="name"><?php safe($item['name']); ?></span>
+                <span class="type"><?php safe($item['type']); ?></span>
+                <span class="date"><?php safe(beautifyTimestamp($item['creation'], true)); ?></span>
+            </div>
+        </div>
+    <?php
+    } else { ?>
+        <div class="column is-one-third">
+            <div class="el folder" onclick="goToFolder('<?php safe($item['uid']); ?>', event)">
+                <span class="name"><?php safe($item['name']); ?></span>
+                <span class="type"><?php safe($item['type']); ?></span>
+                <span class="date"><?php safe(beautifyTimestamp($item['creation'], true)); ?></span>
+            </div>
+        </div>
+    <?php
+    }
 }
+?>
+</div>
+<?php
 }
 ?>

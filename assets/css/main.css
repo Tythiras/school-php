@@ -1,0 +1,76 @@
+html, body {
+    height: 100%;
+    margin: 0;
+}
+.container {
+    height: 100%;
+}
+form {
+    height: 100%;
+}
+#files {
+    flex: 1 1 auto;
+    align-content: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 50px;
+}
+.ready {
+    background-color: wheat;
+}
+#files .el {
+    border-radius: 10px;
+    display: flex;
+    flex-flow: column;
+    color: white;
+    padding: 0.5em;
+    min-height: 8em;
+    cursor: pointer;
+}
+.file {
+    background-color: blue;
+}
+.folder {
+    background-color: lightgreen;
+}
+
+#files .el .name {
+    display: block;
+    font-size: 1.5em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.space {
+    margin-top: 25px;
+}
+
+.modal {
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    justify-items: center;
+}
+.modal.active {
+    display: flex;
+}
+.modal-content {
+    background-color: white;
+    padding: 3em;
+    position: relative;
+    text-align: center;
+}
+.modal-content .button  {
+    width: 50%;
+}
+
+.clickable {
+    cursor: pointer;
+}
+.customLink {
+    color: #3273dc;
+    cursor: pointer;
+    text-decoration: none;
+}

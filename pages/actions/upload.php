@@ -2,7 +2,7 @@
 $error = $info = false;
 if($logged) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $count = count($_FILES['file']['name']);
+        $count = isset($_FILES['file']) ? count($_FILES['file']['name']) : 0;
         if($count > 0) {
             $folder = null;
             if($_POST['folder']&&$_POST['folder']!="null") {
@@ -51,6 +51,8 @@ if($logged) {
         } else {
             $error = "no files";
         }
+    } else {
+        $error = 404;
     }
 }
 if($error) {
