@@ -45,6 +45,10 @@ if($logged) {
     $template = false;
     $file = 'actions/upload.php';
 
+  } else if($page=="/action.move") {
+    $template = false;
+    $file = 'actions/move.php';
+
   } else if($page=="/logout") {
     session_destroy();
     header("Location: ./");

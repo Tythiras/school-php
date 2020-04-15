@@ -1,5 +1,6 @@
 <?php
-if($logged) { ?>
+if($logged) { 
+    ?>
 
 <div class="container">
     <a href="logout" style="position: absolute; right: 10px; top: 10px;">Log ud</a>
@@ -14,7 +15,12 @@ if($logged) { ?>
     </div>
     </form>
 </div>
-
+<div class="droparea modal" data-modal="droparea">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <h3 class="title is-3">Slip filen for at uploade</h3>
+    </div>
+</div>
 <div class="modal" data-modal="newFolder">
     <div class="modal-background"></div>
     <div class="modal-content">

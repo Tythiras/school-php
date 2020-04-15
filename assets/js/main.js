@@ -1,5 +1,6 @@
-let dropArea = document.querySelector("#files");
-let title = document.getElementsByTagName("title")[0].innerHTML;;
+let dropArea = document.querySelector("body");
+let container = document.querySelector(".container");
+let title = document.getElementsByTagName("title")[0].innerHTML;
 let folder = null;
 let files = [];
 let currParams;
@@ -64,17 +65,18 @@ loadFiles();
 function loadFiles() {
     axios.get(folder ? 'action.getFiles?id=' + folder : 'action.getFiles')
         .then(function(res) {
-            dropArea.innerHTML = res.data;
+            document.querySelector("#files").innerHTML = res.data;
         })  
 }
 
 
 
 dropArea.addEventListener('drop', function(e) {
-  let dt = e.dataTransfer
-  let files = dt.files
-
-  upload(files)
+    let dt = e.dataTransfer
+    let files = dt.files
+    if(files.length > 0) {
+        upload(files)
+    }
 }, false)
 
 function upload(files) {
@@ -101,29 +103,115 @@ function upload(files) {
         }
     })
     .catch(function(err){
-        console.log(err);
         alert('Request Error');
     });
 }
 
+//move file stuff
+let dragginInternalFolder = false;
+let lasthover;
+let initial;
+function drag(e) {
+    e.dataTransfer.setData("id", e.target.dataset.id)
+    e.dataTransfer.setData("type", e.target.dataset.type)
+    container.classList.add('moving');
+    dragginInternalFolder = true;
+    inital = e.target.dataset.id;
+}
+function dragOver(e) {
+    if(dragginInternalFolder) {
+        if(e.target.dataset.id!=inital) {
+            e.target.classList.add('draggedOver')
+            lasthover = e.target.dataset.id;
+            e.preventDefault();
 
+        }
+    }
+}
+function dragLeave(e) {
+    if(dragginInternalFolder) {
+        if(lasthover&&e.target.dataset.id) {
+            e.target.classList.remove('draggedOver');
+
+        }
+    }
+}
+function drop(e, el) {
+    if(dragginInternalFolder) {
+        dragginInternalFolder = false;
+        let result = confirm("Er du sikker på du vil flytte filen / mappen hertil?");
+        el.classList.remove('draggedOver');
+        if(result) {
+            let data = new FormData();
+            data.append('targetID', e.dataTransfer.getData('id'));
+            data.append('targetType', e.dataTransfer.getData('type'));
+            data.append('targetFolder', el.dataset.id);
+            axios.post('action.move', data)
+                .then(function({data}){
+                    const res = data;
+                    if(res.success) {
+                        loadFiles();
+                    } else {
+                        console.error(data);
+                        alert('Error: '+res.message);
+                    }
+                })
+                .catch(function(err){
+                    console.log(err);
+                    alert('Request Error');
+                });
+
+        }
+    }
+}
+
+//upload file stuff
 let events = ['dragenter', 'dragover', 'dragleave', 'drop'];
 events.forEach(eventName => {
-  dropArea.addEventListener(eventName, preventDefaults, false)
+    dropArea.addEventListener(eventName, preventDefaults, false)
 })
 function preventDefaults (e) {
-  e.preventDefault()
-  e.stopPropagation()
+    e.preventDefault()
+    e.stopPropagation()
 }
+
 
 dropArea.addEventListener('dragenter', ready, false)
-dropArea.addEventListener('dragover', ready, false)
-
 dropArea.addEventListener('dragleave', unready, false)
-dropArea.addEventListener('drop', unready, false)
-function ready() {
-    dropArea.classList.add('ready');
+dropArea.addEventListener('drop', function(e) {
+    if(containsFiles(e)) {
+        closeModal("droparea")
+    }
+    if(e.dataTransfer.getData('type')) {
+        container.classList.remove('moving');
+        dragginInternalFolder = false;
+    }
+
+}, false)
+let lastenter;
+function ready(e) {
+    if(containsFiles(e)) {
+        lastenter = event.target;
+        openModal("droparea")
+    }
 }
-function unready() {
-    dropArea.classList.remove('ready');
+function unready(e) {
+    if(containsFiles(e)) {
+        if(lastenter == event.target) {
+            closeModal("droparea")
+        }
+    }
+}
+
+
+//https://css-tricks.com/snippets/javascript/test-if-dragenterdragover-event-contains-files/
+function containsFiles(event) {
+    if (event.dataTransfer.types) {
+        for (var i = 0; i < event.dataTransfer.types.length; i++) {
+            if (event.dataTransfer.types[i] == "Files") {
+                return true;
+            }
+        }
+    }
+    return false;
 }

@@ -8,15 +8,15 @@ html, body {
 form {
     height: 100%;
 }
+.columns {
+    margin-top: 0px;
+}
 #files {
     flex: 1 1 auto;
     align-content: center;
     justify-content: center;
     text-align: center;
     margin-top: 50px;
-}
-.ready {
-    background-color: wheat;
 }
 #files .el {
     border-radius: 10px;
@@ -73,4 +73,16 @@ form {
     color: #3273dc;
     cursor: pointer;
     text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.moving .file {
+    background-color: rgba(79, 79, 101, 0.7);
+}
+.moving .folder {
+    background-color: #3285a5;
+}
+
+.draggedOver .folder {
+    background-color: green;
 }
