@@ -27,7 +27,6 @@ function goToFolder(uid, e = false) {
     } else {
         currParams.set('f', uid);
         folder = uid;
-        console.log('pushing new state');
         history.pushState({uid: uid}, title, "?"+currParams.toString());
         loadFiles();
     }
@@ -165,6 +164,31 @@ function drop(e, el) {
     }
 }
 
+function del(e, el) {
+    if(dragginInternalFolder) {
+        dragginInternalFolder = false;
+        let result = confirm("Er du sikker på du vil slette denne fil / mappe?");
+        if(result) {
+            let data = new FormData();
+            data.append('targetID', e.dataTransfer.getData('id'));
+            data.append('targetType', e.dataTransfer.getData('type'));
+            axios.post('action.delete', data)
+                .then(function({data}){
+                    const res = data;
+                    if(res.success) {
+                        loadFiles();
+                    } else {
+                        console.error(data);
+                        alert('Error: '+res.message);
+                    }
+                })
+                .catch(function(err){
+                    console.log(err);
+                    alert('Request Error');
+                });
+        }
+    }
+}
 //upload file stuff
 let events = ['dragenter', 'dragover', 'dragleave', 'drop'];
 events.forEach(eventName => {
@@ -183,8 +207,9 @@ dropArea.addEventListener('drop', function(e) {
         closeModal("droparea")
     }
     if(e.dataTransfer.getData('type')) {
-        container.classList.remove('moving');
         dragginInternalFolder = false;
+        container.classList.remove('moving');
+
     }
 
 }, false)

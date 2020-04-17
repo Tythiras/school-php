@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 03, 2020 at 11:59 AM
+-- Generation Time: Apr 17, 2020 at 12:50 PM
 -- Server version: 10.4.12-MariaDB
 -- PHP Version: 7.4.3
 
@@ -79,6 +79,30 @@ WHERE
     WHERE
         targetFolder = _folderID AND type = 'folder'
 )
+ORDER BY creation DESC$$
+
+CREATE DEFINER=`rasmus`@`localhost` PROCEDURE `folderFilesBackend` (IN `_folderID` INT)  NO SQL
+SELECT name,
+    id,
+    path,
+    creation,
+    ownerID,
+    'file' AS type
+FROM
+    files
+WHERE
+    folderID = _folderID
+UNION ALL
+SELECT name,
+    id,
+    '' AS path,
+    creation,
+    ownerID,
+    'folder' AS type
+FROM
+    folders
+WHERE
+    folderID = _folderID
 ORDER BY creation DESC$$
 
 CREATE DEFINER=`rasmus`@`localhost` PROCEDURE `rootFiles` (IN `_id` INT)  NO SQL

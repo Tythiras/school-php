@@ -48,6 +48,10 @@ if($logged) {
   } else if($page=="/action.move") {
     $template = false;
     $file = 'actions/move.php';
+    
+  } else if($page=="/action.delete") {
+    $template = false;
+    $file = 'actions/delete.php';
 
   } else if($page=="/logout") {
     session_destroy();
