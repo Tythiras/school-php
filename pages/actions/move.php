@@ -1,5 +1,6 @@
 <?php
 $error = false;
+$target = false;
 if($logged) {
     //check if owner is file owner
     $sql = false;
@@ -13,6 +14,7 @@ if($logged) {
         $folderData = $db->prepare('SELECT id FROM folders WHERE uid = ? AND ownerID = ?');
         $folderData->execute([$_POST['targetID'], $logged['id']]);
         if($folderData->rowCount() > 0) {
+            $target = $folderData->fetch();
             $sql = 'UPDATE folders SET folderID = ? WHERE uid = ?';
         }
     }
@@ -26,6 +28,9 @@ if($logged) {
             $check->execute([$_POST['targetFolder'], $logged['id']]);
             if($check->rowCount()>0) {
                 $folder = $check->fetch()['id'];
+                if($target&&$target['id']==$folder) {
+                    $error = 'Du kan ikke flytte mappen til ind i sig selv';
+                }
             } else {
                 $error = 'Folderen blev ikke fundet';
             }

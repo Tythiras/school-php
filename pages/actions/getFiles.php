@@ -35,6 +35,8 @@ if($error) errorBox($error);
 if($parent) {
     ?>
     <span class="customLink" onclick="goToFolder('<?php safe($folder['parentUID']); ?>', event)">Tilbage</span>
+    <button class="button is-success moveUpBtn" type="button" data-id="<?php safe($folder['parentUID']); ?>" ondragenter="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, this)">Flyt op</button>
+
     <br>
     <?php
 }
@@ -45,7 +47,7 @@ if(count($items) == 0) {
 <div class="columns is-multiline is-mobile is-3">
 <?php
 foreach($items as $item) { ?>
-    <div class="column is-one-third" draggable="true" ondragstart="drag(event)" data-id="<?php safe($item['uid']); ?>" data-type="<?php safe($item['type']); ?>" <?php if($item['type']=='folder') { ?>  ondragenter="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, this)"<?php } ?>>
+    <div class="column is-one-third" draggable="true" ondragstart="drag(event)" data-id="<?php safe($item['uid']); ?>" data-type="<?php safe($item['type']); ?>" <?php if($item['type']=='folder') { ?> ondragenter="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, this)"<?php } ?>>
     <?php
     if($item['type'] == 'file') { ?>
         <div class="el file" onclick="downloadFile('<?php safe($item['uid']); ?>')">
