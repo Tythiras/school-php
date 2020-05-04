@@ -10,7 +10,7 @@ if($logged) {
     <form>
     <input type="file" id="fileInput" class="inputfile" multiple accept="image/*" onchange="upload(this.files)">
     <button class="button is-dark modal-btn" style="float: right;" data-modal="newFolder" type="button">Opret mappe</button>
-    <button class="button is-danger deleteFolder" style="float: right;margin-right:20px;" type="button" ondragenter="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, this)">Slet fil</button>
+    <button class="button is-danger deleteFolder" style="float: right;margin-right:20px;" type="button" ondragenter="dragOver(event)" ondragleave="dragLeave(event)" ondrop="del(event, this)">Slet fil</button>
     <div id="files">
     Loading..
     </div>
